@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Auth Demo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .password-container {
+    position: relative;
+    width: 100%;
+}
+
+.password-container input[type="password"],
+.password-container input[type="text"] {
+    padding-right: 40px; /* Make space for the eye icon */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d; /* Gray color */
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover {
+    color: #495057; /* Slightly darker gray on hover */
+    background: none;
+}
+
+.toggle-password i {
+    font-size: 16px;
+    pointer-events: none; /* Make the icon click-through */
+}
+
+/* Remove default button styles */
+.toggle-password:focus {
+    outline: none;
+    box-shadow: none;
+}
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button.secondary {
+            background: #6c757d;
+        }
+        button.secondary:hover {
+            background: #5a6268;
+        }
+        #profile {
+            display: none;
+            margin-top: 20px;
+            padding: 25px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            display: none;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .user-history {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        .last-login {
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        .form-footer {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .form-footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="loginForm" class="form-container">
+        <h2>Login</h2>
+        <div id="loginError" class="alert alert-error"></div>
+        <div id="loginSuccess" class="alert alert-success"></div>
+        
+        <div class="form-group">
+            <input type="text" id="username" placeholder="Username" value="andy_mize">
+        </div>
+        
+        <div class="form-group">
+            <div class="password-container">
+                <input type="password" id="password" placeholder="Password" class="password-input">
+                <button type="button" class="toggle-password" onclick="togglePassword('password')" aria-label="Show password">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        
+        <button onclick="login()">Login</button>
+        <div class="form-footer">
+            <p>Don't have an account? <a href="#" onclick="toggleForms()">Register</a></p>
+        </div>
+    </div>
+
+    <div id="registerForm" class="form-container" style="display: none;">
+        <h2>Register</h2>
+        <div id="registerError" class="alert alert-error"></div>
+        <div id="registerSuccess" class="alert alert-success"></div>
+        
+        <div class="form-group">
+            <input type="text" id="regUsername" placeholder="Username">
+        </div>
+        
+        <div class="form-group">
+            <div class="password-container">
+                <input type="password" id="regPassword" placeholder="Password">
+                <button type="button" class="toggle-password" onclick="togglePassword('regPassword')" aria-label="Show password">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+        </div>
+        
+        <button onclick="register()">Register</button>
+        <div class="form-footer">
+            <p>Already have an account? <a href="#" onclick="toggleForms()">Login</a></p>
+        </div>
+    </div>
+
+    <div id="profile">
+        <h2>Welcome, <span id="welcomeUser"></span>!</h2>
+        <div class="user-history">
+            <p>User ID: <strong id="userId"></strong></p>
+            <p>Member since: <strong id="memberSince"></strong></p>
+            <p class="last-login">Last login: <span id="lastLogin"></span></p>
+        </div>
+        <button class="secondary" onclick="logout()">Logout</button>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        let token = localStorage.getItem('jwt');
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+
+        // Check if already logged in
+        if (token && userData.username) {
+            showProfile();
+        } else {
+            showLoginForm();
+        }
+
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleButton = passwordInput.nextElementSibling;
+            const icon = toggleButton.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+                toggleButton.setAttribute('aria-label', 'Hide password');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+                toggleButton.setAttribute('aria-label', 'Show password');
+            }
+        }
+
+        function toggleForms() {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+            registerForm.style.display = registerForm.style.display === 'none' ? 'block' : 'none';
+            clearAlerts();
+        }
+
+        function showAlert(elementId, message, isError = true) {
+            const alert = document.getElementById(elementId);
+            alert.textContent = message;
+            alert.style.display = 'block';
+            alert.className = `alert ${isError ? 'alert-error' : 'alert-success'}`;
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        function clearAlerts() {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.display = 'none';
+            });
+        }
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            clearAlerts();
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Store token and user data
+                    token = data.token;
+                    localStorage.setItem('jwt', token);
+                    
+                    // Store user data
+                    const userData = {
+                        username,
+                        lastLogin: new Date().toISOString()
+                    };
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    
+                    // Show success message
+                    showAlert('loginSuccess', 'Login successful!', false);
+                    await loadProfile();
+                } else {
+                    showAlert('loginError', data.message || 'Login failed. Please check your credentials.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('loginError', 'An error occurred during login');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+            clearAlerts();
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showAlert('registerSuccess', 'Registration successful! You can now log in.', false);
+                    document.getElementById('regUsername').value = '';
+                    document.getElementById('regPassword').value = '';
+                    toggleForms();
+                } else {
+                    showAlert('registerError', data.message || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('registerError', 'An error occurred during registration');
+            }
+        }
+
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('profile').style.display = 'none';
+        }
+
+        function showProfile() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('profile').style.display = 'block';
+        }
+
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_URL}/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                    
+                    // Update UI
+                    document.getElementById('welcomeUser').textContent = user.username;
+                    document.getElementById('userId').textContent = user.id;
+                    document.getElementById('memberSince').textContent = new Date(user.created_at).toLocaleString();
+                    
+                    // Show last login time
+                    const lastLogin = userData.lastLogin ? new Date(userData.lastLogin).toLocaleString() : 'First login!';
+                    document.getElementById('lastLogin').textContent = lastLogin;
+                    
+                    // Update last login time
+                    userData.lastLogin = new Date().toISOString();
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    
+                    showProfile();
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                logout();
+            }
+        }
+
+        function logout() {
+            // Clear sensitive data
+            localStorage.removeItem('jwt');
+            token = null;
+            
+            // Keep username for convenience
+            const username = document.getElementById('username').value;
+            if (username) {
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                userData.username = username;
+                localStorage.setItem('userData', JSON.stringify(userData));
+            }
+            
+            // Reset forms and show login
+            document.getElementById('password').value = '';
+            showLoginForm();
+        }
+
+        // Initialize form with stored username if available
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            if (userData.username) {
+                document.getElementById('username').value = userData.username;
+            }
+        });
+    </script>
+</body>
+</html>
