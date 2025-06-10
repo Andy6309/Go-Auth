@@ -42,6 +42,23 @@ type UserRepository struct {
 	db *sql.DB
 }
 
+// Migrate creates the users table if it doesn't exist
+func Migrate(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		username TEXT NOT NULL UNIQUE,
+		password TEXT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+	);`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		return fmt.Errorf("failed to create users table: %w", err)
+	}
+	return nil
+}
+
 // NewUserRepository creates a new UserRepository
 func NewUserRepository(db *sql.DB) *UserRepository {
 	return &UserRepository{db: db}

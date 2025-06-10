@@ -41,7 +41,7 @@ func main() {
 
 	// Initialize repositories and handlers
 	userRepo := models.NewUserRepository(db)
-	authHandler := handlers.NewAuthHandler(userRepo, cfg.JWTSecret, int(cfg.JWTExpiry.Hours()))
+	authHandler := handlers.NewAuthHandler(userRepo, cfg.JWTSecret, cfg.JWTExpiry)
 
 	// Create router
 	r := mux.NewRouter()

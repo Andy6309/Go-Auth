@@ -13,10 +13,10 @@ import (
 type AuthHandler struct {
 	userRepo    *models.UserRepository
 	jwtSecret   string
-	jwtExpiry   int // in hours
+	jwtExpiry   time.Duration
 }
 
-func NewAuthHandler(userRepo *models.UserRepository, jwtSecret string, jwtExpiry int) *AuthHandler {
+func NewAuthHandler(userRepo *models.UserRepository, jwtSecret string, jwtExpiry time.Duration) *AuthHandler {
 	return &AuthHandler{
 		userRepo:    userRepo,
 		jwtSecret:   jwtSecret,
@@ -104,7 +104,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate JWT token
-	token, err := auth.GenerateToken(user.ID, user.Username, h.jwtSecret, time.Duration(h.jwtExpiry)*time.Hour)
+	tokenString, err := auth.GenerateToken(user.ID, user.Username, h.jwtSecret, h.jwtExpiry)
 	if err != nil {
 		middleware.ErrorResponse(w, "Failed to generate token", http.StatusInternalServerError)
 		return
@@ -112,21 +112,21 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	// Return token in response
 	middleware.JSONResponse(w, AuthResponse{
-		Token:     token,
-		ExpiresIn: h.jwtExpiry * 3600, // in seconds
+		Token:     tokenString,
+		ExpiresIn: int(h.jwtExpiry.Seconds()),
 		TokenType: "bearer",
 	}, http.StatusOK)
 }
 
 // Profile returns the authenticated user's profile
 func (h *AuthHandler) Profile(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value("user_id").(int)
+	userID, ok := r.Context().Value(middleware.UserIDKey).(int)
 	if !ok {
 		middleware.ErrorResponse(w, "User not authenticated", http.StatusUnauthorized)
 		return
 	}
 
-	username, ok := r.Context().Value("username").(string)
+	username, ok := r.Context().Value(middleware.UsernameKey).(string)
 	if !ok {
 		middleware.ErrorResponse(w, "User not authenticated", http.StatusUnauthorized)
 		return
