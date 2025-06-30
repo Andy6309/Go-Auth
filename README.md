@@ -84,7 +84,7 @@ DB_PATH=./db-data/auth.db
   - Get current user profile
   - Requires `Authorization: Bearer <token>` header
 
-## 🛠️ Project Structure
+##  Project Structure
 
 ```
 Go-Auth/
@@ -108,11 +108,11 @@ Go-Auth/
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📸 Screenshots
+## Screenshots
 
 ### Login Page
 ![Login Page](images/Login-Page.png)
