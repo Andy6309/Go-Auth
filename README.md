@@ -1,20 +1,20 @@
-# 🔐 Go Auth
+#  Go Auth
 
 A secure authentication system built with Go, JWT, and SQLite. This application provides a complete authentication solution with user registration, login, and protected routes.
 
 ![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go)
 ![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)
 
-## ✨ Features
+## Features
 
-- 🔐 JWT-based authentication
-- 👤 User registration and login
-- 🛡️ Protected API endpoints
-- 💾 SQLite database for data persistence
-- 🌐 CORS support
-- 🏗️ Clean architecture with separation of concerns
+-  JWT-based authentication
+-  User registration and login
+-  Protected API endpoints
+-  SQLite database for data persistence
+-  CORS support
+-  Clean architecture with separation of concerns
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -51,7 +51,7 @@ JWT_EXPIRATION=24h
 DB_PATH=./db-data/auth.db
 ```
 
-## 🏃 Running the Application
+##  Running the Application
 
 1. Create the database directory:
    ```bash
@@ -65,7 +65,7 @@ DB_PATH=./db-data/auth.db
 
 3. Access the application at `http://localhost:3010`
 
-## 📚 API Documentation
+##  API Documentation
 
 ### Authentication
 
@@ -104,7 +104,7 @@ Go-Auth/
 └── README.md                # This file
 ```
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -117,7 +117,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ### Login Page
 ![Login Page](images/Login-Page.png)
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 - [Gorilla Mux](https://github.com/gorilla/mux) for HTTP routing
 - [Modernc SQLite](https://modernc.org/sqlite) for SQLite driver
